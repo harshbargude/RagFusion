@@ -25,7 +25,3 @@ ENV JAVA_OPTS="-XX:+UseContainerSupport -XX:MaxRAMPercentage=75 -XX:+HeapDumpOnO
 EXPOSE 8080
 
 ENTRYPOINT ["sh","-c","exec java $JAVA_OPTS -jar /app/app.jar --spring.profiles.active=prod"]
-
-# Notes:
-# - Pass sensitive values as environment variables or Docker secrets.
-# - For production use an image scanner and run as non-root user (done here).
