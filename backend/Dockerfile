@@ -13,7 +13,7 @@ COPY src ./src
 RUN mvn clean package -DskipTests
 
 # Use an official Eclipse Temurin image to run the application
-FROM eclipse-temurin:21-jre-slim
+FROM eclipse-temurin:21-jre
 
 # Set the working directory
 WORKDIR /app
