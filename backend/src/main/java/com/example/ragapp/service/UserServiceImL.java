@@ -35,7 +35,6 @@ public class UserServiceImL implements UserService {
         user.setPassword(passwordEncoder.encode(userRegistrationDto.getPassword()));
         user.setEnabled(true);
 
-        // Assign default role of USER
         Role userRole = roleRepository.findByRole("ROLE_USER");
         if (userRole == null) {
             userRole = new Role("ROLE_USER");

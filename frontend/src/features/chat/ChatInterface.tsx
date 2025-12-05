@@ -112,7 +112,7 @@ export const ChatInterface: React.FC = () => {
       // Check browser devtools Network tab to see the actual request
       // (Remove or reduce logging in production)
       // eslint-disable-next-line no-console
-      console.debug('[ChatInterface] sendMessage:', { sessionId, content: trimmed });
+      // console.debug('[ChatInterface] sendMessage:', { sessionId, content: trimmed });
       const assistant = await chatApi.sendSessionMessage(sessionId, trimmed);
       setMessages(prev => [...prev, assistant]);
       
@@ -122,7 +122,7 @@ export const ChatInterface: React.FC = () => {
          sessionStore.renameSession(sessionId, newTitle);
       }
     } catch (err) {
-      console.error('Chat error', err);
+      // console.error('Chat error', err);
       setMessages(prev => [...prev, { id: String(Date.now()), role: 'assistant', content: 'Sorry, I encountered an error processing your request.' }]);
     } finally {
       setIsLoading(false);
@@ -143,15 +143,11 @@ export const ChatInterface: React.FC = () => {
       const docs = await chatApi.getSessionDocuments(sessionId);
       setDocuments(docs || []);
     } catch (err) {
-      console.error('Failed to refresh documents', err);
     } finally {
       setLoadingDocuments(false);
     }
   };
 
-  // ------------------------------------------------------------------
-  // RENDER HELPERS
-  // ------------------------------------------------------------------
 
   const EmptyState = () => (
     <div className="flex flex-col items-center justify-center h-full text-center px-4 pb-20">
@@ -188,7 +184,6 @@ export const ChatInterface: React.FC = () => {
     return (
       <div className={`w-full py-6 ${isAi ? 'bg-transparent' : ''}`}>
         <div className="max-w-3xl mx-auto px-4 flex gap-4 sm:gap-6">
-          {/* Avatar */}
           <div className="flex-shrink-0 flex flex-col relative items-end">
             <div className={`
               w-8 h-8 rounded-sm flex items-center justify-center
@@ -198,7 +193,6 @@ export const ChatInterface: React.FC = () => {
             </div>
           </div>
 
-          {/* Content */}
           <div className="relative flex-1 overflow-hidden">
               <div className="prose dark:prose-invert max-w-none text-[15px] leading-7 text-gray-800 dark:text-gray-100">
                 <div className="max-w-none">
@@ -206,7 +200,6 @@ export const ChatInterface: React.FC = () => {
                 </div>
               </div>
 
-            {/* Citations */}
             {'citations' in m && m.citations && Array.isArray((m as any).citations) && (m as any).citations.length > 0 && (
               <div className="mt-4 pt-3 border-t border-gray-100 dark:border-gray-800">
                  <div className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-2 flex items-center gap-1">
@@ -230,7 +223,6 @@ export const ChatInterface: React.FC = () => {
   return (
     <div className="flex flex-col h-full w-full relative">
       
-      {/* SCROLLABLE AREA */}
       <div className="flex-1 overflow-y-auto w-full scrollbar-thin scrollbar-thumb-gray-200 dark:scrollbar-thumb-gray-700">
         {messages.length === 0 ? (
           <EmptyState />
@@ -259,7 +251,6 @@ export const ChatInterface: React.FC = () => {
         )}
       </div>
 
-      {/* DOCUMENTS SECTION */}
       {documents.length > 0 && (
         <div className="border-t-2 border-purple-300 dark:border-purple-600 bg-gradient-to-b from-purple-50 to-transparent dark:from-purple-950/30 dark:to-transparent px-6 py-5">
           <div className="flex items-center gap-3 mb-4">
@@ -291,7 +282,6 @@ export const ChatInterface: React.FC = () => {
         </div>
       )}
 
-      {/* UPLOAD SECTION */}
       {sessionId && <SessionDocumentUpload sessionId={sessionId} onUploadSuccess={refreshDocuments} />}
 
       {/* INPUT AREA */}
@@ -299,7 +289,6 @@ export const ChatInterface: React.FC = () => {
         <div className="max-w-3xl mx-auto relative">
           <div className="relative flex items-end w-full p-3 bg-white dark:bg-[#2F2F2F] border border-gray-200 dark:border-gray-600 rounded-2xl shadow-lg ring-offset-2 focus-within:ring-2 ring-purple-500/50">
             
-            {/* Upload Document Button */}
             <button
               onClick={() => {
                 const fileInput = document.createElement('input');

@@ -11,7 +11,7 @@ export const sendSessionMessage = async (sessionId: string, content: string) => 
   // POST /api/v1/chat/sessions/{sessionId}/messages
   // Debug: log request details (remove in production)
   // eslint-disable-next-line no-console
-  console.debug('[chatApi] POST', `/v1/chat/sessions/${sessionId}/messages`, { content });
+  // console.debug('[chatApi] POST', `/v1/chat/sessions/${sessionId}/messages`, { content });
   const { data } = await apiClient.post<ChatMessage>(`/v1/chat/sessions/${sessionId}/messages`, { content });
   return data;
 };
@@ -27,17 +27,13 @@ export const getSessionHistory = async (sessionId: string) => {
 };
 
 export const deleteSession = async (sessionId: string) => {
-  // Debug: log delete request
-  // eslint-disable-next-line no-console
-  console.debug('[chatApi] DELETE', `/v1/chat/sessions/${sessionId}`);
+  // console.debug('[chatApi] DELETE', `/v1/chat/sessions/${sessionId}`);
   const res = await apiClient.delete(`/v1/chat/sessions/${sessionId}`);
-  // eslint-disable-next-line no-console
-  console.debug('[chatApi] DELETE response', res && res.status, res && res.data);
+  // console.debug('[chatApi] DELETE response', res && res.status, res && res.data);
   return res.data;
 };
 
 export const createSessionWithFile = async (file?: File) => {
-  // POST /api/v1/chat/sessions/create-with-file
   const formData = new FormData();
   if (file) {
     formData.append('file', file);
@@ -51,7 +47,6 @@ export const createSessionWithFile = async (file?: File) => {
 };
 
 export const uploadDocumentToSession = async (sessionId: string, file: File) => {
-  // POST /api/v1/documents/upload-to-session/{sessionId}
   const formData = new FormData();
   formData.append('file', file);
   const { data } = await apiClient.post(
@@ -63,7 +58,6 @@ export const uploadDocumentToSession = async (sessionId: string, file: File) => 
 };
 
 export const getSessionDocuments = async (sessionId: string) => {
-  // GET /api/v1/documents/session/{sessionId}
   const { data } = await apiClient.get(`/v1/documents/session/${sessionId}`);
   return data as Array<any>;
 };

@@ -14,14 +14,12 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ user, isAuthenticated 
 
   return (
     <div className="text-center mb-24 animate-fade-in">
-      {/* Version Badge */}
       <Badge 
         icon={<Sparkles className="w-3 h-3" />}
-        text="v2.0 is now live"
+        text="v1.0 is now live"
         variant="success"
       />
 
-      {/* Main Heading with Gradient Animation */}
       <h1 className="text-5xl sm:text-6xl md:text-7xl font-black text-gray-900 dark:text-white tracking-tight mb-6 leading-tight">
         Welcome to{' '}
         <span className="relative inline-block">

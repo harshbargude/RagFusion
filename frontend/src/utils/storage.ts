@@ -1,7 +1,3 @@
-/**
- * Storage abstraction layer
- * Handles localStorage with fallback to in-memory storage
- */
 
 const memoryStorage: Record<string, string> = {};
 
@@ -64,7 +60,6 @@ export const storageUtils = {
   },
 };
 
-// Storage keys
 export const STORAGE_KEYS = {
   TOKEN: 'auth_token',
   USER: 'user_data',

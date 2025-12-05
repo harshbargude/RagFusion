@@ -27,7 +27,6 @@ export const Navbar: React.FC = () => {
             </span>
           </Link>
 
-          {/* Navigation Links */}
           <div className="flex items-center space-x-4">
             {isAuthenticated ? (
               <>
@@ -38,13 +37,13 @@ export const Navbar: React.FC = () => {
                   <Home className="w-5 h-5" />
                   <span>Home</span>
                 </Link>
-                <Link
+                {/* <Link
                   to="/profile"
                   className="flex items-center space-x-1 text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
                 >
                   <User className="w-5 h-5" />
                   <span>{user?.firstName || 'Profile'}</span>
-                </Link>
+                </Link> */}
                 <Link
                   to="/chat"
                   className="flex items-center space-x-1 text-gray-700 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"

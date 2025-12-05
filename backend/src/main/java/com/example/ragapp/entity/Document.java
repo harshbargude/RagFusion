@@ -44,6 +44,9 @@ public class Document {
     @Column(name = "vector_id")  // For vector store reference
     private String vectorId;
     
+    @Column(columnDefinition = "TEXT")  // Store extracted text content for RAG context
+    private String content;
+    
     @Temporal(TemporalType.TIMESTAMP)
     private Date uploadedAt;
     
@@ -118,6 +121,14 @@ public class Document {
 
     public void setVectorId(String vectorId) {
         this.vectorId = vectorId;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
     }
 
     public Date getUploadedAt() {

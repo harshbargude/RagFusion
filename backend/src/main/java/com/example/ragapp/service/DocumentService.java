@@ -12,6 +12,5 @@ public interface DocumentService {
     java.util.List<Document> getDocumentsByUser(String userEmail);
     java.util.List<Document> getDocumentsBySession(ChatSession session);
     void deleteDocument(Long id, String userEmail);
-
-    
+    void deleteDocumentsBySession(ChatSession session);
 }

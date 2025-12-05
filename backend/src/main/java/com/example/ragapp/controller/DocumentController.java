@@ -2,7 +2,6 @@ package com.example.ragapp.controller;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -88,7 +87,8 @@ public class DocumentController {
         
         ChatSession session = sessionRepository.findBySessionIdAndUser(sessionId, user);
         if (session == null) {
-            return ResponseEntity.status(404).build();
+            // Return empty list instead of 404 for non-existent sessions
+            return ResponseEntity.ok(new java.util.ArrayList<>());
         }
         
         List<Document> docs = documentService.getDocumentsBySession(session);

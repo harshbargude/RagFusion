@@ -33,7 +33,6 @@ export const Login: React.FC = () => {
     setIsLoading(true);
     try {
       await login(email, password);
-      // After successful login, go to the chat interface
       navigate('/chat');
     } catch (error: any) {
       setErrors({ general: error.message || 'Login failed.' });
@@ -45,9 +44,7 @@ export const Login: React.FC = () => {
   return (
     <div className="min-h-screen flex w-full bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900">
       
-      {/* LEFT SIDE: Brand/Visuals */}
       <div className="hidden lg:flex lg:w-1/2 relative bg-gradient-to-br from-blue-600 via-cyan-600 to-teal-600 dark:from-blue-700 dark:via-cyan-700 dark:to-teal-700 items-center justify-center overflow-hidden p-12">
-        {/* Animated Background Elements */}
         <div className="absolute inset-0 opacity-20">
           <div className="absolute top-1/4 left-1/4 w-72 h-72 bg-white rounded-full mix-blend-overlay filter blur-3xl animate-pulse" />
           <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-cyan-200 rounded-full mix-blend-overlay filter blur-3xl animate-pulse delay-700" />
@@ -67,7 +64,7 @@ export const Login: React.FC = () => {
           </h1>
 
           <p className="text-lg text-blue-50 leading-relaxed mb-8">
-            Chat with your documents using Retrieval-Augmented Generation — fast, private, and contextual.
+            Chat with your documents — fast, private, and contextual.
           </p>
 
           <div className="flex gap-4">
@@ -91,11 +88,9 @@ export const Login: React.FC = () => {
         </div>
       </div>
 
-      {/* RIGHT SIDE: Form */}
       <div className="flex-1 flex items-center justify-center p-6 sm:p-8 lg:p-12">
         <div className="w-full max-w-md">
           
-          {/* Mobile Logo */}
           <div className="lg:hidden flex justify-center mb-8">
             <div className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-br from-blue-600 to-cyan-600 rounded-xl shadow-lg">
               <Sparkles className="w-6 h-6 text-white" />
@@ -119,7 +114,7 @@ export const Login: React.FC = () => {
             {errors.general && (
               <div className="p-4 rounded-xl bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20">
                 <div className="flex items-start gap-3">
-                  <div className="flex-shrink-0 w-5 h-5 rounded-full bg-red-100 dark:bg-red-500/20 flex items-center justify-center mt-0.5">
+                  <div className="shrink-0 w-5 h-5 rounded-full bg-red-100 dark:bg-red-500/20 flex items-center justify-center mt-0.5">
                     <div className="w-2 h-2 rounded-full bg-red-600 dark:bg-red-400" />
                   </div>
                   <p className="text-sm text-red-800 dark:text-red-400 flex-1">
@@ -223,7 +218,6 @@ export const Login: React.FC = () => {
               </label>
             </div>
 
-            {/* Submit Button */}
             <button
               type="submit"
               disabled={isLoading}
@@ -242,19 +236,17 @@ export const Login: React.FC = () => {
               )}
             </button>
 
-            {/* Divider */}
             <div className="relative my-6">
               <div className="absolute inset-0 flex items-center">
                 <div className="w-full border-t border-slate-200 dark:border-slate-700" />
               </div>
               <div className="relative flex justify-center text-xs">
-                <span className="px-4 bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900 text-slate-500 dark:text-slate-400">
+                <span className="px-4 bg-linear-to-br from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900 text-slate-500 dark:text-slate-400">
                   New to our platform?
                 </span>
               </div>
             </div>
 
-            {/* Sign Up Link */}
             <div className="text-center">
               <p className="text-sm text-slate-600 dark:text-slate-400">
                 Don't have an account?{' '}
@@ -268,7 +260,6 @@ export const Login: React.FC = () => {
             </div>
           </form>
 
-          {/* Footer */}
           <p className="mt-8 text-center text-xs text-slate-500 dark:text-slate-500">
             By signing in, you agree to our{' '}
             <a href="#" className="underline hover:text-slate-700 dark:hover:text-slate-400">Terms</a>

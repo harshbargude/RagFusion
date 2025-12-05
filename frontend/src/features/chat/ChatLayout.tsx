@@ -147,7 +147,7 @@ export const ChatLayout: React.FC = () => {
   const navigate = useNavigate();
   const { sessionId: paramId } = useParams();
   const [sessions, setSessions] = useState<Array<any>>([]);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const { user} = useAuth();
   const { showToast } = useToast();
@@ -183,7 +183,7 @@ export const ChatLayout: React.FC = () => {
       // Attempt server delete (if authenticated) and always remove locally
       // Log for debugging
       // eslint-disable-next-line no-console
-      console.debug('[ChatLayout] deleting session', id);
+      // console.debug('[ChatLayout] deleting session', id);
       await sessionService.deleteSession(id);
       // Ensure immediate UI update from local store to avoid reappearing if remote still lists it
       const localList = sessionStore.listSessions();
@@ -191,7 +191,7 @@ export const ChatLayout: React.FC = () => {
       showToast?.('Chat deleted', 'success');
       if (paramId === id) navigate('/chat');
     } catch (err) {
-      console.error('Failed to delete session', err);
+      // console.error('Failed to delete session', err);
       showToast?.('Failed to delete chat', 'error');
     }
   };
@@ -239,7 +239,7 @@ export const ChatLayout: React.FC = () => {
               {/* Delete appears on hover */}
               <button 
                 onClick={(e) => remove(e, s.id)}
-                className="opacity-0 group-hover:opacity-100 text-gray-400 hover:text-white transition-opacity"
+                className="opacity-10 group-hover:opacity-50 text-gray-400 hover:text-white transition-opacity"
               >
                 <Trash2 className="w-4 h-4" />
               </button>

@@ -1,44 +1,36 @@
 package com.example.ragapp.controller;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RequestParam;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
 import com.example.ragapp.dto.chat.ChatMessageDto;
 import com.example.ragapp.dto.chat.ChatRequest;
 import com.example.ragapp.dto.chat.ChatResponse;
-import com.example.ragapp.entity.ChatMessage;
-import com.example.ragapp.entity.ChatSession;
-import com.example.ragapp.entity.MessageType;
-import com.example.ragapp.entity.User;
-import com.example.ragapp.repository.ChatMessageRepository;
-import com.example.ragapp.repository.ChatSessionRepository;
-import com.example.ragapp.repository.UserRepository;
+import com.example.ragapp.dto.chat.SessionDto;
 import com.example.ragapp.service.ChatService;
-import com.example.ragapp.service.DocumentService;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.example.ragapp.service.ChatSessionService;
+import com.example.ragapp.service.GeminiService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import jakarta.validation.Valid;
-import jakarta.transaction.Transactional;
 
 @Validated
 @RestController
@@ -47,25 +39,16 @@ import jakarta.transaction.Transactional;
 public class ChatController {
 
     private final ChatService chatService;
-    private final ChatSessionRepository sessionRepository;
-    private final ChatMessageRepository messageRepository;
-    private final UserRepository userRepository;
-    private final DocumentService documentService;
-    private final com.example.ragapp.service.GeminiService geminiService;
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ChatSessionService sessionService;
+    private final GeminiService geminiService;
     private static final Logger logger = LoggerFactory.getLogger(ChatController.class);
 
-    public ChatController(ChatService chatService,
-            ChatSessionRepository sessionRepository,
-            ChatMessageRepository messageRepository,
-            UserRepository userRepository,
-            DocumentService documentService,
-            com.example.ragapp.service.GeminiService geminiService) {
+    public ChatController(
+            ChatService chatService,
+            ChatSessionService sessionService,
+            GeminiService geminiService) {
         this.chatService = chatService;
-        this.sessionRepository = sessionRepository;
-        this.messageRepository = messageRepository;
-        this.userRepository = userRepository;
-        this.documentService = documentService;
+        this.sessionService = sessionService;
         this.geminiService = geminiService;
     }
 
@@ -114,68 +97,58 @@ public class ChatController {
             return ResponseEntity.status(401).build();
         }
 
-        User user = userRepository.findByEmail(userEmail);
-        if (user == null) {
+        try {
+            SessionDto sessionDto = sessionService.createSessionWithFile(userEmail, clientSessionId, file);
+            Map<String, Object> response = new HashMap<>();
+            response.put("sessionId", sessionDto.getSessionId());
+            response.put("title", sessionDto.getTitle());
+            response.put("createdAt", sessionDto.getCreatedAt());
+            response.put("fileUploaded", file != null && !file.isEmpty());
+            return ResponseEntity.ok(response);
+        } catch (org.springframework.security.core.userdetails.UsernameNotFoundException e) {
+            logger.error("User not found: {}", userEmail, e);
             return ResponseEntity.status(404).build();
-        }
-
-        // Create new chat session (use client-provided sessionId if present)
-        String sessionIdToUse = (clientSessionId != null && !clientSessionId.isBlank()) ? clientSessionId
-                : UUID.randomUUID().toString();
-
-        ChatSession session = sessionRepository.findBySessionIdAndUser(sessionIdToUse, user);
-        if (session == null) {
-            session = new ChatSession();
-            session.setSessionId(sessionIdToUse);
-            session.setUser(user);
-            session.setTitle("Chat");
-            session.setCreatedAt(new java.util.Date());
-            session = sessionRepository.save(session);
-        }
-
-        Map<String, Object> response = new HashMap<>();
-        response.put("sessionId", session.getSessionId());
-        response.put("title", session.getTitle());
-        response.put("createdAt", session.getCreatedAt());
-
-        // Upload file to session if provided
-        if (file != null && !file.isEmpty()) {
+        } catch (RuntimeException e) {
+            // If file upload failed, still return the session but with error info
+            logger.error("Error creating session with file: {}", e.getMessage(), e);
             try {
-                documentService.uploadDocumentToSession(file, userEmail, session);
-                response.put("fileUploaded", true);
-            } catch (Exception e) {
+                // Try to get the session even if file upload failed
+                SessionDto sessionDto = sessionService.getOrCreateSession(userEmail, clientSessionId);
+                Map<String, Object> response = new HashMap<>();
+                response.put("sessionId", sessionDto.getSessionId());
+                response.put("title", sessionDto.getTitle());
+                response.put("createdAt", sessionDto.getCreatedAt());
                 response.put("fileUploaded", false);
-                response.put("fileError", e.getMessage());
+                response.put("fileError", e.getCause() != null ? e.getCause().getMessage() : e.getMessage());
+                return ResponseEntity.ok(response);
+            } catch (Exception ex) {
+                // If we can't even get the session, return 500
+                logger.error("Failed to create session: {}", ex.getMessage(), ex);
+                Map<String, Object> response = new HashMap<>();
+                response.put("error", "Failed to create session: " + ex.getMessage());
+                return ResponseEntity.status(500).body(response);
             }
+        } catch (Exception e) {
+            logger.error("Unexpected error creating session: {}", e.getMessage(), e);
+            Map<String, Object> response = new HashMap<>();
+            response.put("error", "Unexpected error: " + e.getMessage());
+            return ResponseEntity.status(500).body(response);
         }
-
-        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/sessions")
-    public ResponseEntity<Map<String, Object>> createSession(Authentication authentication) {
+    public ResponseEntity<SessionDto> createSession(Authentication authentication) {
         String userEmail = authentication != null ? authentication.getName() : null;
         if (userEmail == null) {
             return ResponseEntity.status(401).build();
         }
 
-        User user = userRepository.findByEmail(userEmail);
-        if (user == null) {
+        try {
+            SessionDto sessionDto = sessionService.createSession(userEmail, null);
+            return ResponseEntity.ok(sessionDto);
+        } catch (org.springframework.security.core.userdetails.UsernameNotFoundException e) {
             return ResponseEntity.status(404).build();
         }
-
-        ChatSession session = new ChatSession();
-        session.setSessionId(UUID.randomUUID().toString());
-        session.setUser(user);
-        session.setTitle("Chat");
-        session.setCreatedAt(new java.util.Date());
-        session = sessionRepository.save(session);
-
-        Map<String, Object> response = new HashMap<>();
-        response.put("sessionId", session.getSessionId());
-        response.put("title", session.getTitle());
-        response.put("createdAt", session.getCreatedAt());
-        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/test/gemini")
@@ -185,68 +158,52 @@ public class ChatController {
         return ResponseEntity.ok(result == null ? "" : result);
     }
 
-    // List sessions for authenticated user
-    @org.springframework.web.bind.annotation.GetMapping("/sessions")
-    public ResponseEntity<List<Map<String, Object>>> listSessions(Authentication authentication) {
+    @GetMapping("/sessions")
+    public ResponseEntity<List<SessionDto>> listSessions(Authentication authentication) {
         String userEmail = authentication != null ? authentication.getName() : null;
-        if (userEmail == null)
+        if (userEmail == null) {
             return ResponseEntity.status(401).build();
-        User user = userRepository.findByEmail(userEmail);
-        if (user == null)
-            return ResponseEntity.status(404).build();
-        List<ChatSession> sessions = sessionRepository.findByUserOrderByCreatedAtDesc(user);
-        List<Map<String, Object>> out = new ArrayList<>();
-        for (ChatSession s : sessions) {
-            Map<String, Object> m = new HashMap<>();
-            m.put("sessionId", s.getSessionId());
-            m.put("title", s.getTitle());
-            m.put("createdAt", s.getCreatedAt());
-            out.add(m);
         }
-        return ResponseEntity.ok(out);
+
+        try {
+            List<SessionDto> sessions = sessionService.listSessions(userEmail);
+            return ResponseEntity.ok(sessions);
+        } catch (org.springframework.security.core.userdetails.UsernameNotFoundException e) {
+            return ResponseEntity.status(404).build();
+        }
     }
 
-    // Get history for one session
-    @org.springframework.web.bind.annotation.GetMapping("/sessions/{sessionId}")
-    public ResponseEntity<?> getSessionHistory(@PathVariable String sessionId, Authentication authentication) {
+    @GetMapping("/sessions/{sessionId}")
+    public ResponseEntity<List<Map<String, Object>>> getSessionHistory(
+            @PathVariable String sessionId, 
+            Authentication authentication) {
         String userEmail = authentication != null ? authentication.getName() : null;
-        if (userEmail == null)
+        if (userEmail == null) {
             return ResponseEntity.status(401).build();
-        User user = userRepository.findByEmail(userEmail);
-        if (user == null)
-            return ResponseEntity.status(404).build();
-        ChatSession session = sessionRepository.findBySessionIdAndUser(sessionId, user);
-        if (session == null)
-            return ResponseEntity.status(404).build();
-
-        List<ChatMessage> msgs = messageRepository.findBySessionOrderByTimestampAsc(session);
-        List<Map<String, Object>> out = new ArrayList<>();
-        for (ChatMessage msg : msgs) {
-            Map<String, Object> m = new HashMap<>();
-            m.put("role", msg.getType().name().toLowerCase());
-            m.put("content", msg.getContent());
-            m.put("timestamp", msg.getTimestamp());
-            out.add(m);
         }
-        return ResponseEntity.ok(out);
+
+        try {
+            List<Map<String, Object>> history = sessionService.getSessionHistory(sessionId, userEmail);
+            return ResponseEntity.ok(history);
+        } catch (org.springframework.security.core.userdetails.UsernameNotFoundException e) {
+            return ResponseEntity.status(404).build();
+        }
     }
 
-    // Delete a session and its messages
-    @org.springframework.web.bind.annotation.DeleteMapping("/sessions/{sessionId}")
-    @Transactional
-    public ResponseEntity<?> deleteSession(@PathVariable String sessionId, Authentication authentication) {
+    @DeleteMapping("/sessions/{sessionId}")
+    public ResponseEntity<Void> deleteSession(
+            @PathVariable String sessionId, 
+            Authentication authentication) {
         String userEmail = authentication != null ? authentication.getName() : null;
-        if (userEmail == null)
+        if (userEmail == null) {
             return ResponseEntity.status(401).build();
-        User user = userRepository.findByEmail(userEmail);
-        if (user == null)
+        }
+
+        try {
+            sessionService.deleteSession(sessionId, userEmail);
+            return ResponseEntity.noContent().build();
+        } catch (org.springframework.security.core.userdetails.UsernameNotFoundException | IllegalArgumentException e) {
             return ResponseEntity.status(404).build();
-        ChatSession session = sessionRepository.findBySessionIdAndUser(sessionId, user);
-        if (session == null)
-            return ResponseEntity.status(404).build();
-        // delete messages first
-        messageRepository.deleteBySession(session);
-        sessionRepository.delete(session);
-        return ResponseEntity.noContent().build();
+        }
     }
 }
