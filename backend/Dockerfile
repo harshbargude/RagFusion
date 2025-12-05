@@ -1,27 +1,26 @@
-### Multi-stage Dockerfile: build with Maven, run with lightweight JRE
+# Use official Maven image to build the Spring Boot app
 FROM maven:3.9.4-eclipse-temurin-21 AS build
-WORKDIR /workspace
 
-# copy maven wrapper & pom for dependency caching
-COPY mvnw pom.xml ./
-COPY .mvn .mvn
-RUN ./mvnw -ntp -B -f pom.xml -DskipTests dependency:go-offline
-
-# copy sources and build
-COPY src ./src
-RUN ./mvnw -B -DskipTests package -DskipTests
-
-FROM eclipse-temurin:21-jre
-RUN addgroup --system app && adduser --system --ingroup app app
+# Set the working directory
 WORKDIR /app
 
-# copy artifact
-COPY --from=build /workspace/target/*.jar app.jar
-RUN chown app:app /app/app.jar
-USER app
+# Copy pom.xml file and install dependencies
+COPY pom.xml .
+RUN mvn dependency:go-offline
 
-# reasonable defaults, can be overridden via env
-ENV JAVA_OPTS="-XX:+UseContainerSupport -XX:MaxRAMPercentage=75 -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/tmp"
+# Copy the source code and build the application
+COPY src ./src
+RUN mvn clean package -DskipTests
+
+# Use an official Eclipse Temurin image to run the application
+FROM eclipse-temurin:21-jre-slim
+
+# Set the working directory
+WORKDIR /app
+
+# Copy the build JAR file from the build stage
+COPY --from=build /app/target/ragapp-0.0.1-SNAPSHOT.jar
+
 EXPOSE 8080
 
-ENTRYPOINT ["sh","-c","exec java $JAVA_OPTS -jar /app/app.jar --spring.profiles.active=prod"]
+ENTRYPOINT ["java", "-jar", "/app/app.jar"]
