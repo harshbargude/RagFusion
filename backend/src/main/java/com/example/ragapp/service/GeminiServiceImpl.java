@@ -23,7 +23,7 @@ public class GeminiServiceImpl implements GeminiService {
     @Value("${google.api.key}")
     private String googleApiKey;
 
-    @Value("${google.gemini.model}")
+    @Value("${google.gemini.model:gemini-2.5-flash}")
     private String geminiModel;
 
 
