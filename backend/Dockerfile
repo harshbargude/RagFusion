@@ -23,4 +23,4 @@ COPY --from=build /app/target/ragapp-0.0.1-SNAPSHOT.jar
 
 EXPOSE 8080
 
-ENTRYPOINT ["java", "-jar", "/app/app.jar"]
+ENTRYPOINT ["java", "-jar", "/app/ragapp-0.0.1-SNAPSHOT.jar"]
