@@ -2,8 +2,22 @@ import axios, { AxiosError, type AxiosInstance, type InternalAxiosRequestConfig 
 import { storageUtils, STORAGE_KEYS } from '../utils/storage';
 
 // Create axios instance
+// In development, use relative URL to leverage Vite proxy
+// In production, use environment variable or fallback to full URL
+const getBaseURL = (): string => {
+  if (import.meta.env.VITE_API_BASE_URL) {
+    return import.meta.env.VITE_API_BASE_URL;
+  }
+  // In development (Vite dev server), use relative URL to leverage proxy
+  if (import.meta.env.DEV) {
+    return '/api';
+  }
+  // Production fallback
+  return 'http://localhost:8080/api';
+};
+
 const apiClient: AxiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api',
+  baseURL: getBaseURL(),
   headers: {
     'Content-Type': 'application/json',
   },

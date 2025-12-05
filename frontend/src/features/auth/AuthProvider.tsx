@@ -31,7 +31,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           setUser(null);
         }
       } catch (error) {
-        console.error('Auth initialization error:', error);
+        // console.error('Auth initialization error:', error);
         setUser(null);
       } finally {
         setIsLoading(false);
