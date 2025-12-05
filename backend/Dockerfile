@@ -19,7 +19,7 @@ FROM eclipse-temurin:21-jre-slim
 WORKDIR /app
 
 # Copy the build JAR file from the build stage
-COPY --from=build /app/target/ragapp-0.0.1-SNAPSHOT.jar
+COPY --from=build /app/target/ragapp-0.0.1-SNAPSHOT.jar .
 
 EXPOSE 8080
 
