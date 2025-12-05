@@ -59,7 +59,7 @@ public class ChatController {
             Authentication authentication) {
 
         String userEmail = authentication != null ? authentication.getName() : null;
-        logger.info("sendMessage called for sessionId={} userEmail={}", sessionId, userEmail);
+        // logger.info("sendMessage called for sessionId={} userEmail={}", sessionId, userEmail);
         String content = payload.get("content");
 
         ChatRequest request = new ChatRequest();
@@ -106,11 +106,11 @@ public class ChatController {
             response.put("fileUploaded", file != null && !file.isEmpty());
             return ResponseEntity.ok(response);
         } catch (org.springframework.security.core.userdetails.UsernameNotFoundException e) {
-            logger.error("User not found: {}", userEmail, e);
+            // logger.error("User not found: {}", userEmail, e);
             return ResponseEntity.status(404).build();
         } catch (RuntimeException e) {
             // If file upload failed, still return the session but with error info
-            logger.error("Error creating session with file: {}", e.getMessage(), e);
+            // logger.error("Error creating session with file: {}", e.getMessage(), e);
             try {
                 // Try to get the session even if file upload failed
                 SessionDto sessionDto = sessionService.getOrCreateSession(userEmail, clientSessionId);
@@ -123,13 +123,13 @@ public class ChatController {
                 return ResponseEntity.ok(response);
             } catch (Exception ex) {
                 // If we can't even get the session, return 500
-                logger.error("Failed to create session: {}", ex.getMessage(), ex);
+                // logger.error("Failed to create session: {}", ex.getMessage(), ex);
                 Map<String, Object> response = new HashMap<>();
                 response.put("error", "Failed to create session: " + ex.getMessage());
                 return ResponseEntity.status(500).body(response);
             }
         } catch (Exception e) {
-            logger.error("Unexpected error creating session: {}", e.getMessage(), e);
+            // logger.error("Unexpected error creating session: {}", e.getMessage(), e);
             Map<String, Object> response = new HashMap<>();
             response.put("error", "Unexpected error: " + e.getMessage());
             return ResponseEntity.status(500).body(response);

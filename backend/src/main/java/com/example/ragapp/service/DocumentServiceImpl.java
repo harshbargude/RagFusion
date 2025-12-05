@@ -153,7 +153,7 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Transactional
     public Document uploadDocumentToSession(MultipartFile file, String userEmail, ChatSession session) {
-        System.out.println("[DocumentService] uploadDocumentToSession called for file: " + file.getOriginalFilename() + ", session: " + session.getSessionId());
+        // System.out.println("[DocumentService] uploadDocumentToSession called for file: " + file.getOriginalFilename() + ", session: " + session.getSessionId());
         validateFile(file);
         User user = userRepository.findByEmail(userEmail);
         if (user == null) throw new UsernameNotFoundException("User not found");
@@ -194,7 +194,7 @@ public class DocumentServiceImpl implements DocumentService {
             }
 
             // 2. NEW CLOUDINARY UPLOAD (Single upload - no duplicates)
-            System.out.println("[DocumentService] Uploading to Cloudinary: " + file.getOriginalFilename() + " (Size: " + fileBytes.length + " bytes)");
+            // System.out.println("[DocumentService] Uploading to Cloudinary: " + file.getOriginalFilename() + " (Size: " + fileBytes.length + " bytes)");
             @SuppressWarnings("unchecked")
             Map<String, Object> uploadResult = cloudinary.uploader().upload(fileBytes, ObjectUtils.asMap(
                 "resource_type", "auto",
@@ -202,7 +202,7 @@ public class DocumentServiceImpl implements DocumentService {
             ));
             secureUrl = (String) uploadResult.get("secure_url");
             publicId = (String) uploadResult.get("public_id");
-            System.out.println("[DocumentService] Cloudinary upload successful. Public ID: " + publicId);
+            // System.out.println("[DocumentService] Cloudinary upload successful. Public ID: " + publicId);
 
                         // 3. STORE IN MEMORY (The Core of Full Context RAG)
             final String textToStore = fileContent; 
