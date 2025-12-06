@@ -35,7 +35,11 @@ import jakarta.validation.Valid;
 @Validated
 @RestController
 @RequestMapping("/api/v1/chat")
-@CrossOrigin(origins = { "http://localhost:3000", "http://localhost:5173" })
+@CrossOrigin(origins = { 
+    "http://localhost:3000", 
+    "http://localhost:5173",
+    "https://rag-fusion-uali.vercel.app"
+})
 public class ChatController {
 
     private final ChatService chatService;

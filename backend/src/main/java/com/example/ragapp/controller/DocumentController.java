@@ -29,7 +29,11 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1")
-@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:5173"})
+@CrossOrigin(origins = {
+    "http://localhost:3000", 
+    "http://localhost:5173",
+    "https://rag-fusion-uali.vercel.app"
+})
 public class DocumentController {
     
     private final DocumentService documentService;

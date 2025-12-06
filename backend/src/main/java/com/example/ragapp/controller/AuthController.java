@@ -19,7 +19,11 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = { "http://localhost:3000", "http://localhost:5173" }) // React/Vite app URLs
+@CrossOrigin(origins = { 
+    "http://localhost:3000", 
+    "http://localhost:5173",
+    "https://rag-fusion-uali.vercel.app"
+})
 public class AuthController {
 
     @Autowired

@@ -87,8 +87,12 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        // Allow common development ports (Vite uses 5173, React uses 3000)
-        configuration.setAllowedOriginPatterns(Arrays.asList("http://localhost:*"));
+        // Allow localhost for development and Vercel deployment for production
+        configuration.setAllowedOriginPatterns(Arrays.asList(
+            "http://localhost:*",
+            "https://rag-fusion-uali.vercel.app",
+            "https://*.vercel.app" // Allow all Vercel preview deployments
+        ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);

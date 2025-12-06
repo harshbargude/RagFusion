@@ -12,7 +12,11 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/users")
-@CrossOrigin(origins = {"http://localhost:3000", "http://localhost:5173"})
+@CrossOrigin(origins = {
+    "http://localhost:3000", 
+    "http://localhost:5173",
+    "https://rag-fusion-uali.vercel.app"
+})
 public class UserController {
 
     @Autowired
