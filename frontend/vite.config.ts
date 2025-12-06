@@ -12,7 +12,7 @@ export default defineConfig({
     // Production build optimizations
     outDir: 'dist',
     sourcemap: false, // Set to true if you need source maps for debugging in production
-    minify: 'terser',
+    minify: 'esbuild', // Use esbuild (faster, default in Vite 7)
     rollupOptions: {
       output: {
         manualChunks: {
