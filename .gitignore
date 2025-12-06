@@ -4,3 +4,5 @@ backend/src/main/resources/application.properties
 frontend/.env.development
 uploads/documents/30d34b3e-0be6-4b42-ab46-aed3a66e383e.pdf
 uploads/documents/f4ebc2ad-4cbc-4c8a-b1af-dd734ba338a0.pdf
+frontend/.env
+
