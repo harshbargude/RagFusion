@@ -1,7 +1,7 @@
 import React from "react";
 import * as NavigationMenuPrimitive from "@radix-ui/react-navigation-menu";
 import { clsx } from "clsx";
-import { User, LogIn, Plus, History, LogOut } from "lucide-react"; // Using lucide-react for icons
+import { User, LogIn, LogOut } from "lucide-react"; // Using lucide-react for icons
 
 
 interface User {
@@ -15,32 +15,11 @@ export interface RAGNavbarProps {
   onLogout?: () => void;
 }
 
-interface NavLinkProps {
-  href: string;
-  children: React.ReactNode;
-}
-
 interface ListItemProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
   href: string;
   children: React.ReactNode;
   className?: string;
 }
-
-
-const NavLink: React.FC<NavLinkProps> = ({ href, children }) => (
-  <NavigationMenuPrimitive.Item>
-    <NavigationMenuPrimitive.Link
-      href={href}
-      className={clsx(
-        "px-3 py-2 text-sm rounded-md hover:bg-gray-100 dark:hover:bg-gray-900",
-        "font-medium text-gray-700 dark:text-gray-100",
-        "focus:outline-none focus-visible:ring-2 focus-visible:ring-purple-500"
-      )}
-    >
-      {children}
-    </NavigationMenuPrimitive.Link>
-  </NavigationMenuPrimitive.Item>
-);
 
 const ListItem = React.forwardRef<HTMLAnchorElement, ListItemProps>(
   ({ className, children, href, ...props }, forwardedRef) => (

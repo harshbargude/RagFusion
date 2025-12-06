@@ -17,7 +17,6 @@ export const ChatInterface: React.FC = () => {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [documents, setDocuments] = useState<any[]>([]);
-  const [loadingDocuments, setLoadingDocuments] = useState(false);
 
   
   const endRef = useRef<HTMLDivElement | null>(null);
@@ -57,15 +56,12 @@ export const ChatInterface: React.FC = () => {
     if (!sessionId) return;
     let mounted = true;
     (async () => {
-      setLoadingDocuments(true);
       try {
         const docs = await chatApi.getSessionDocuments(sessionId);
         if (mounted) setDocuments(docs || []);
       } catch (err) {
-        console.error('Failed to load documents', err);
+        // console.error('Failed to load documents', err);
         if (mounted) setDocuments([]);
-      } finally {
-        if (mounted) setLoadingDocuments(false);
       }
     })();
     return () => { mounted = false; };
@@ -138,13 +134,11 @@ export const ChatInterface: React.FC = () => {
 
   const refreshDocuments = async () => {
     if (!sessionId) return;
-    setLoadingDocuments(true);
     try {
       const docs = await chatApi.getSessionDocuments(sessionId);
       setDocuments(docs || []);
     } catch (err) {
-    } finally {
-      setLoadingDocuments(false);
+      // Error handling
     }
   };
 

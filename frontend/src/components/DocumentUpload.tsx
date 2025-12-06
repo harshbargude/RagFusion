@@ -19,7 +19,7 @@ export const DocumentUpload: React.FC = () => {
     formData.append('file', file);
 
     try {
-      const response = await apiClient.post('/v1/documents/upload', formData, {
+      await apiClient.post('/v1/documents/upload', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       showToast('Document uploaded successfully', 'success');

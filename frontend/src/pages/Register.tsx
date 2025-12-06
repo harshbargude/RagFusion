@@ -4,7 +4,7 @@ import { useAuth } from '../features/auth/useAuth';
 import { Button } from '../components/Button';
 import { Input } from '../components/Input';
 import { Card } from '../components/Card';
-import { UserPlus, Mail, Lock, User } from 'lucide-react';
+import { UserPlus } from 'lucide-react';
 
 export const Register: React.FC = () => {
   const [formData, setFormData] = useState({

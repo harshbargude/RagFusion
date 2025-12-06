@@ -8,11 +8,6 @@ import * as chatApi from './chatApi';
 import { useToast } from '../../hooks/useToast';
 import { useAuth } from '../auth/useAuth';
 
-const createId = () => {
-  if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) return (crypto as any).randomUUID();
-  return Math.random().toString(36).slice(2, 9);
-};
-
 interface CreateSessionModalProps {
   isOpen: boolean;
   onClose: () => void;

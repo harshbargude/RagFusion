@@ -8,7 +8,6 @@ import { Register } from '../pages/Register';
 import { Home } from '../pages/Home';
 import { ChatLayout } from '../features/chat/ChatLayout';
 import { RAGNavbar } from '../components/RAGNavbar';
-import { Profile } from '../pages/profile';
 
 function AppContent() {
   const { isAuthenticated, user, logout } = useAuth();
