@@ -117,6 +117,10 @@ export const RAGNavbar: React.FC<RAGNavbarProps> = ({
                 )}
               >
                 <ul className="flex flex-col space-y-1">
+                  <ListItem href="/chat">
+                    <User className="w-4 h-4 mr-2" />
+                    Chat
+                  </ListItem>
                   <ListButton onClick={onLogout}>
                     <LogOut className="w-4 h-4 mr-2" />
                     Logout

@@ -76,7 +76,7 @@ export const Register: React.FC = () => {
         formData.email,
         formData.password
       );
-      navigate('/');
+      navigate('/chat');
     } catch (error: any) {
       setErrors({ general: error.message || 'Registration failed. Please try again.' });
     } finally {
